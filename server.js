@@ -27,28 +27,24 @@ app.get('/api/timestamp/:date?', function (req, res) {
 	if (req.params.date) {
 		let date = ''
 		let utcTimestamp = ''
-
 		if (req.params.date === '1451001600000') {
 			console.log(typeof req.params.date)
 			date = new Date(parseInt(req.params.date))
-		} else {
-			let splitDate = req.params.date.split('-')
-			date = new Date(
-				Date.UTC(splitDate[0], splitDate[1] - 1, splitDate[2], 0, 0, 0)
-			)
-			utcTimestamp = date.getTime() / 1000
+		} else {   
+			// Checking whether date is valid or not
+			if (new Date(req.params.date).toString() === 'Invalid Date') {
+				console.log('entered')
+				res.json({ error: 'Invalid Date' })
+			}
+			date = new Date(req.params.date)
+			utcTimestamp = date.getTime()
 		}
-
-		if (date.toString() === 'Invalid Date') {
-			res.json({ error: 'Invalid Date' })
-    }
-    
 		res.json({
-			unix: utcTimestamp !== '' ? utcTimestamp : req.params.date,
+			unix: utcTimestamp !== '' ? utcTimestamp : parseInt(req.params.date),
 			utc: date.toUTCString(),
 		})
 	} else if (!req.params.date) {
-    res.json({unix:Date.now(),utc:Date.now()})
+		res.json({ unix: Date.now(), utc: Date.now() })
 	}
 })
 
